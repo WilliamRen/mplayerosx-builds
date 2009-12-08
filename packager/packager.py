@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-packager.py
+mplayerosx-builds packager script.
 
 Created by Stefano Pigozzi on 2009-12-03.
 Copyright (c) 2009 Stefano Pigozzi. All rights reserved.
@@ -12,23 +12,32 @@ automatically, and a new appcast is created based on the package's
 DSA signature.
 
 """
+__author__ = 'slicer1337@gmail.com (Stefano Pigozzi)'
+
 import os
 from os import path
 import sys
 import re
 
+import ConfigParser
 import datetime
 import subprocess
 from zipfile import ZipFile, ZIP_DEFLATED
 
-USERNAME = "stefano"
-MPLAYER_EXEC = "/Users/%s/dev/mplayer-build/mplayer/mplayer" % USERNAME
+USERNAME = os.getlogin()
+SVN_REVISION = 29971
+MPLAYER_EXEC_DIR = "/Users/%s/dev/mplayer-build/mplayer" % USERNAME
 LIB_DIRS = ["/usr/local","/opt/local"]
 PKG_DIR = "/Users/%s/dev" % USERNAME
 PKG_NAME = "mplayer-pigoz.mpBinaries"
 DSA_PRIV = "/Users/%s/dsa_priv.pem" % USERNAME
 
+SPARKLE_DIR = "/Users/%s/dev/mplayerosx-builds/sparkle" % USERNAME
+APPCAST_FILE = path.join(SPARKLE_DIR, 'appcast.xml')
+SPARKLE_RNOTES_DIR = path.join(SPARKLE_DIR, "rnotes/")
+
 PKG_PRODUCT = path.join(PKG_DIR, PKG_NAME)
+MPLAYER_EXEC = path.join(MPLAYER_EXEC_DIR, 'mplayer')
 BUNDLED_LIBS_DIR = path.join(PKG_PRODUCT, 'Contents/MacOS/lib')
 BUNDLED_MPLAYER_EXEC = path.join(PKG_PRODUCT, 'Contents/MacOS/mplayer')
 BUNDLED_PLIST_FILE = path.join(PKG_PRODUCT, 'Contents/Info.plist')
@@ -68,7 +77,7 @@ def time_to_strversion(time):
 def time_to_filename(time):
 	return 'mplayer-%s.zip' % time_to_strversion(time)
 
-def plist(time):
+def plist(time, svn):
 	return """<?xml version="1.0" encoding="UTF-8"?>
 	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 	<plist version="1.0">
@@ -82,7 +91,7 @@ def plist(time):
 		<key>MPEBinaryHomepage</key>
 		<string>http://code.google.com/p/mplayerosx-builds/</string>
 		<key>MPEBinarySVNRevisionEquivalent</key>
-		<string>29971</string>
+		<string>%d</string>
 		<key>CFBundleVersion</key>
 		<string>%s</string>
 		<key>CFBundleShortVersionString</key>
@@ -100,7 +109,7 @@ def plist(time):
 		<key>LSBackgroundOnly</key>
 		<integer>1</integer>
 	</dict>
-	</plist>""" % (time.strftime("%Y%m%d"), time.strftime("%Y-%m-%d"))
+	</plist>""" % (svn, time.strftime("%Y%m%d"), time.strftime("%Y-%m-%d"))
 	
 def write_plist(time):
 	f = open(BUNDLED_PLIST_FILE, 'w')
@@ -121,10 +130,41 @@ def appcast(time, dsa, length):
 								http://mplayerosx-builds.googlecode.com/hg/sparkle/rnotes/%s.html
 							</sparkle:releaseNotesLink>
 	           <pubDate>%s</pubDate>
-	           <enclosure url="http://mplayerosx-builds.googlecode.com/files/%s" sparkle:version="%s" sparkle:shortVersionString="%s" sparkle:dsaSignature="%s" length="%s" type="application/octet-stream" />
+	           <enclosure url="http://mplayerosx-builds.googlecode.com/files/%s" sparkle:version="%s" sparkle:shortVersionString="%s" 
+										sparkle:dsaSignature="%s" length="%s" type="application/octet-stream" />
 	        </item>
 	   </channel>
-	</rss>""" % (time_to_strversion(time), time_to_strversion(time), time.strftime("%a, %d %b %Y %H:%M:%S +0000"), time_to_filename(time), time_to_version(time), time_to_strversion(time), dsa, length)
+	</rss>""" % (time_to_strversion(time), time_to_strversion(time), time.strftime("%a, %d %b %Y %H:%M:%S +0000"), 
+					time_to_filename(time), time_to_version(time), time_to_strversion(time), dsa, length)
+
+def rnotes_stub(time, svn, git):
+	return """<html>
+
+		<head>
+			<meta http-equiv="content-type" content="text/html;charset=utf-8">
+			<title>New in Version %s.</title>
+			<meta name="robots" content="anchors">
+			<link href="rnotes.css" type="text/css" rel="stylesheet" media="all">
+		</head>
+
+		<body>
+			<br />
+				<table class="dots" width="100%" border="0" cellspacing="0" cellpadding="0" summary="Two column table with heading">
+					<tr>
+						<td class="blue" colspan="2">
+							<h3>Up to date git pull</h3>
+						</td>
+					</tr>
+					<tr>
+						<td valign="top">
+							<p>This version was built using mplayer.git up to commit %s. Latest SVN merge in the git tree was r%d.</p>
+						</td>
+					</tr>
+				</table>
+				<br>
+		</body>
+
+	</html>""" % (time_to_strversion(time), git, svn)
 
 def main():
 	print("Copying mplayer binary to the package directory...")
@@ -139,15 +179,34 @@ def main():
 	now = datetime.datetime.utcnow()
 	
 	print("Writing new version number to Info.plist...")
-	write_plist(now)
+	write_plist(SVN_REVISION, now)
 	print("Zipping %s to %s..." % (PKG_NAME, time_to_filename(now)))
 	exec_cmd("cd %s && rm %s" % (PKG_DIR, time_to_filename(now)))
 	exec_cmd("cd %s && zip -rq %s %s" % (PKG_DIR, time_to_filename(now), PKG_NAME+"/"))
-
-	print("Preparing appcast.xml...")
+	
+	print("Uploading package to Google Code...")
+	config = ConfigParser.ConfigParser()
+	config.read([path.expanduser('~/.mposx')])
+	print config.get('googlecode', 'username')
+	print config.get('googlecode', 'password')
+	exec_cmd("cd %s && python googlecode_upload.py -s %s -p mplayerosx-builds -u %s -w %s %s" % (path.realpath(__file__), 
+											"mplayer-%s" % time_to_strversion(now), config.get('googlecode', 'username'), 
+											config.get('googlecode', 'password'), path.join(PKG_DIR, time_to_filename(now))))
+	
+	print("Writinging appcast.xml...")
 	dsa = exec_cmd_with_result("openssl dgst -sha1 -binary < %s | openssl dgst -dss1 -sign %s | openssl enc -base64" % (path.join(PKG_DIR, time_to_filename(now)), DSA_PRIV))
 	length = os.stat(path.join(PKG_DIR, time_to_filename(now))).st_size
-	print appcast(now, dsa, length)
+	
+	acf = open(APPCAST_FILE, 'w')
+	acf.write(appcast(now, dsa, length))
+	acf.close()
+	
+	print("Writing release notes stub...")
+	git_commit = exec_cmd_with_result("cd %s && git log -n1 | grep ^commit. | sed -e 's/^commit.//g'" % MPLAYER_EXEC_DIR)
+	rnf = open(path.join(SPARKLE_RNOTES_DIR, "%s.html" % time_to_strversion(now)))
+	rnf.write(rnotes_stub(now, SVN_REVISION, git_commit))
+	
+	print("Packaging complete. To finalize do a mercurial push.")
 
 if __name__ == '__main__':
 	main()
