@@ -206,6 +206,7 @@ def main():
 	git_commit = exec_cmd_with_result("cd %s && git log -n1 | grep ^commit. | sed -e 's/^commit.//g'" % MPLAYER_EXEC_DIR)
 	rnf = open(path.join(SPARKLE_RNOTES_DIR, "%s.html" % time_to_strversion(now)), 'w')
 	rnf.write(rnotes_stub(now, SVN_REVISION, git_commit))
+	rnf.close()
 	
 	print("Packaging complete. To finalize appcast.xml and release notes do a mercurial push.")
 
