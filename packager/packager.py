@@ -45,6 +45,9 @@ BUNDLED_PLIST_FILE = path.join(PKG_PRODUCT, 'Contents/Info.plist')
 def exec_cmd(command):
 	subprocess.call(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
+def exec_cmd_verbose(command):
+	subprocess.call(command, shell=True)
+
 def exec_cmd_with_result(command):
 	result = subprocess.Popen( ["-c", command ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
 	return re.sub("\n$", "", result.communicate()[0])
@@ -111,9 +114,9 @@ def plist(time, svn):
 	</dict>
 	</plist>""" % (svn, time.strftime("%Y%m%d"), time.strftime("%Y-%m-%d"))
 	
-def write_plist(time):
+def write_plist(time, svn):
 	f = open(BUNDLED_PLIST_FILE, 'w')
-	f.write(plist(time))
+	f.write(plist(time, svn))
 	f.close()
 
 def appcast(time, dsa, length):
@@ -149,7 +152,7 @@ def rnotes_stub(time, svn, git):
 
 		<body>
 			<br />
-				<table class="dots" width="100%" border="0" cellspacing="0" cellpadding="0" summary="Two column table with heading">
+				<table class="dots" width="100%%" border="0" cellspacing="0" cellpadding="0" summary="Two column table with heading">
 					<tr>
 						<td class="blue" colspan="2">
 							<h3>Up to date git pull</h3>
@@ -157,7 +160,7 @@ def rnotes_stub(time, svn, git):
 					</tr>
 					<tr>
 						<td valign="top">
-							<p>This version was built using mplayer.git up to commit %s. Latest SVN merge in the git tree was r%d.</p>
+							<p>This version was built using mplayer.git up to commit %s. Latest SVN merge in the git tree was %d.</p>
 						</td>
 					</tr>
 				</table>
@@ -179,7 +182,7 @@ def main():
 	now = datetime.datetime.utcnow()
 	
 	print("Writing new version number to Info.plist...")
-	write_plist(SVN_REVISION, now)
+	write_plist(now, SVN_REVISION)
 	print("Zipping %s to %s..." % (PKG_NAME, time_to_filename(now)))
 	exec_cmd("cd %s && rm %s" % (PKG_DIR, time_to_filename(now)))
 	exec_cmd("cd %s && zip -rq %s %s" % (PKG_DIR, time_to_filename(now), PKG_NAME+"/"))
@@ -187,9 +190,7 @@ def main():
 	print("Uploading package to Google Code...")
 	config = ConfigParser.ConfigParser()
 	config.read([path.expanduser('~/.mposx')])
-	print config.get('googlecode', 'username')
-	print config.get('googlecode', 'password')
-	exec_cmd("cd %s && python googlecode_upload.py -s %s -p mplayerosx-builds -u %s -w %s %s" % (path.realpath(__file__), 
+	exec_cmd_verbose("cd %s && python googlecode_upload.py -s %s -p mplayerosx-builds -u %s -w %s %s" % (path.dirname(path.realpath(__file__)), 
 											"mplayer-%s" % time_to_strversion(now), config.get('googlecode', 'username'), 
 											config.get('googlecode', 'password'), path.join(PKG_DIR, time_to_filename(now))))
 	
@@ -203,10 +204,10 @@ def main():
 	
 	print("Writing release notes stub...")
 	git_commit = exec_cmd_with_result("cd %s && git log -n1 | grep ^commit. | sed -e 's/^commit.//g'" % MPLAYER_EXEC_DIR)
-	rnf = open(path.join(SPARKLE_RNOTES_DIR, "%s.html" % time_to_strversion(now)))
+	rnf = open(path.join(SPARKLE_RNOTES_DIR, "%s.html" % time_to_strversion(now)), 'w')
 	rnf.write(rnotes_stub(now, SVN_REVISION, git_commit))
 	
-	print("Packaging complete. To finalize do a mercurial push.")
+	print("Packaging complete. To finalize appcast.xml and release notes do a mercurial push.")
 
 if __name__ == '__main__':
 	main()
