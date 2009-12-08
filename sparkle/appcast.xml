@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
-   <channel>
-      <title>mplayer.git Binary Distribution Changelog</title>
-      <link>http://mplayerosx-builds.googlecode.com/hg/sparkle/appcast.xml</link>
-      <description>Most recent changes with links to updates.</description>
-      <language>en</language>
-         <item>
-           <title>Version 2009-12-03</title>
-						<sparkle:releaseNotesLink>
-							http://mplayerosx-builds.googlecode.com/hg/sparkle/rnotes/2009-12-03.html
-						</sparkle:releaseNotesLink>
-           <pubDate>Thu, 03 Dec 2009 11:08:00 +0000</pubDate>
-           <enclosure url="http://mplayerosx-builds.googlecode.com/files/mplayer-2009-12-03.zip" sparkle:version="20091203" sparkle:shortVersionString="2009-12-03" sparkle:dsaSignature="MC0CFGNPZz8d9Whv5QSD+3hZ0jvXw83hAhUAs822Vbn0hRAuffMbDDPEaCtcwug=" length="6267773" type="application/octet-stream" />
-        </item>
-   </channel>
-</rss>
+	<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+	   <channel>
+	      <title>mplayer.git Binary Distribution Changelog</title>
+	      <link>http://mplayerosx-builds.googlecode.com/hg/sparkle/appcast.xml</link>
+	      <description>Most recent changes with links to updates.</description>
+	      <language>en</language>
+	         <item>
+	           <title>Version 2009-12-08</title>
+							<sparkle:releaseNotesLink>
+								http://mplayerosx-builds.googlecode.com/hg/sparkle/rnotes/2009-12-08.html
+							</sparkle:releaseNotesLink>
+	           <pubDate>Tue, 08 Dec 2009 10:27:03 +0000</pubDate>
+	           <enclosure url="http://mplayerosx-builds.googlecode.com/files/mplayer-2009-12-08.zip" sparkle:version="20091208" sparkle:shortVersionString="2009-12-08" 
+										sparkle:dsaSignature="MC0CFBPu9Zr3x5fqlY6ajkq7pty8o3NVAhUAmQhQaB4b+M3TQHR9cz/S8rcXx4M=" length="6293980" type="application/octet-stream" />
+	        </item>
+	   </channel>
+	</rss>
