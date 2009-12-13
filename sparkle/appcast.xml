@@ -6,13 +6,13 @@
 	      <description>Most recent changes with links to updates.</description>
 	      <language>en</language>
 	         <item>
-	           <title>Version 2009-12-08</title>
+	           <title>Version 2009-12-13</title>
 							<sparkle:releaseNotesLink>
-								http://mplayerosx-builds.googlecode.com/hg/sparkle/rnotes/2009-12-08.html
+								http://mplayerosx-builds.googlecode.com/hg/sparkle/rnotes/2009-12-13.html
 							</sparkle:releaseNotesLink>
-	           <pubDate>Tue, 08 Dec 2009 10:27:03 +0000</pubDate>
-	           <enclosure url="http://mplayerosx-builds.googlecode.com/files/mplayer-2009-12-08.zip" sparkle:version="20091208" sparkle:shortVersionString="2009-12-08" 
-										sparkle:dsaSignature="MC0CFBPu9Zr3x5fqlY6ajkq7pty8o3NVAhUAmQhQaB4b+M3TQHR9cz/S8rcXx4M=" length="6293980" type="application/octet-stream" />
+	           <pubDate>Sun, 13 Dec 2009 16:27:37 +0000</pubDate>
+	           <enclosure url="http://mplayerosx-builds.googlecode.com/files/mplayer-2009-12-13.zip" sparkle:version="20091213" sparkle:shortVersionString="2009-12-13" 
+										sparkle:dsaSignature="MC0CFGeOqWmR4srrU8GvOTPdx0Cg+TaUAhUAqhA1FAjfz0higo41oVvTAYmByAE=" length="6294090" type="application/octet-stream" />
 	        </item>
 	   </channel>
 	</rss>
