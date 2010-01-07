@@ -178,7 +178,7 @@ def rnotes_stub(time, svn, git):
 
 def main():
 	parser = optparse.OptionParser(usage='packager.py [options]')
-	parser.add_option('-d', '--deploy', action='store_true', dest='deploy'
+	parser.add_option('-d', '--deploy', action='store_true', dest='deploy',
                     help='Deploys package to Google Code')
 	options, args = parser.parse_args()
 	
