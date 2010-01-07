@@ -20,6 +20,7 @@ import sys
 import re
 
 import ConfigParser
+import optparse
 import datetime
 import subprocess
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -58,11 +59,17 @@ def install_name_tool():
 	bundled_libs_dir=os.listdir(BUNDLED_LIBS_DIR)
 	for libname in bundled_libs_dir:
 		for libdir in LIB_DIRS:
-			exec_cmd('install_name_tool -change "%s/lib/%s" "@executable_path/lib/%s" "%s"' % (libdir, libname, libname, BUNDLED_MPLAYER_EXEC))
-			exec_cmd('install_name_tool -id "@executable_path/lib/%s" "%s"' % (libname, path.join(BUNDLED_LIBS_DIR, libname)))
+			exec_cmd('install_name_tool \
+				-change "%s/lib/%s" "@executable_path/lib/%s" "%s"' %
+				(libdir, libname, libname, BUNDLED_MPLAYER_EXEC))
+			exec_cmd('install_name_tool -id "@executable_path/lib/%s" "%s"' % 
+					(libname, path.join(BUNDLED_LIBS_DIR, libname)))
 			
 			for libname2 in bundled_libs_dir:
-				exec_cmd('install_name_tool -change "%s/lib/%s" "@executable_path/lib/%s" "%s"' % (libdir, libname, libname, path.join(BUNDLED_LIBS_DIR, libname2)))
+				exec_cmd('install_name_tool \
+				-change "%s/lib/%s" "@executable_path/lib/%s" "%s"' %
+				(libdir, libname, libname,
+				path.join(BUNDLED_LIBS_DIR, libname2)))
 				
 def strip():
 	"""Strips the mplayer executable and the libraries"""
@@ -170,6 +177,11 @@ def rnotes_stub(time, svn, git):
 	</html>""" % (time_to_strversion(time), git, svn)
 
 def main():
+	parser = optparse.OptionParser(usage='packager.py [options]')
+	parser.add_option('-d', '--deploy', dest='deploy',
+                    help='Deploys package to Google Code')
+	options, args = parser.parse_args()
+	
 	print("Copying mplayer binary to the package directory...")
 	exec_cmd("cp %s %s" % (MPLAYER_EXEC, \
 		path.join(PKG_PRODUCT, 'Contents/MacOS/mplayer')))
@@ -183,32 +195,34 @@ def main():
 	
 	print("Writing new version number to Info.plist...")
 	write_plist(now, SVN_REVISION)
-	print("Zipping %s to %s..." % (PKG_NAME, time_to_filename(now)))
-	exec_cmd("cd %s && rm %s" % (PKG_DIR, time_to_filename(now)))
-	exec_cmd("cd %s && zip -rq %s %s" % (PKG_DIR, time_to_filename(now), PKG_NAME+"/"))
 	
-	print("Uploading package to Google Code...")
-	config = ConfigParser.ConfigParser()
-	config.read([path.expanduser('~/.mposx')])
-	exec_cmd_verbose("cd %s && python googlecode_upload.py -s %s -p mplayerosx-builds -u %s -w %s %s" % (path.dirname(path.realpath(__file__)), 
+	if options.deploy:
+		print("Zipping %s to %s..." % (PKG_NAME, time_to_filename(now)))
+		exec_cmd("cd %s && rm %s" % (PKG_DIR, time_to_filename(now)))
+		exec_cmd("cd %s && zip -rq %s %s" % (PKG_DIR, time_to_filename(now), PKG_NAME+"/"))
+		
+		print("Uploading package to Google Code...")
+		config = ConfigParser.ConfigParser()
+		config.read([path.expanduser('~/.mposx')])
+		exec_cmd_verbose("cd %s && python googlecode_upload.py -s %s -p mplayerosx-builds -u %s -w %s %s" % (path.dirname(path.realpath(__file__)), 
 											"mplayer-%s" % time_to_strversion(now), config.get('googlecode', 'username'), 
 											config.get('googlecode', 'password'), path.join(PKG_DIR, time_to_filename(now))))
 	
-	print("Writinging appcast.xml...")
-	dsa = exec_cmd_with_result("openssl dgst -sha1 -binary < %s | openssl dgst -dss1 -sign %s | openssl enc -base64" % (path.join(PKG_DIR, time_to_filename(now)), DSA_PRIV))
-	length = os.stat(path.join(PKG_DIR, time_to_filename(now))).st_size
+		print("Writinging appcast.xml...")
+		dsa = exec_cmd_with_result("openssl dgst -sha1 -binary < %s | openssl dgst -dss1 -sign %s | openssl enc -base64" % (path.join(PKG_DIR, time_to_filename(now)), DSA_PRIV))
+		length = os.stat(path.join(PKG_DIR, time_to_filename(now))).st_size
 	
-	acf = open(APPCAST_FILE, 'w')
-	acf.write(appcast(now, dsa, length))
-	acf.close()
+		acf = open(APPCAST_FILE, 'w')
+		acf.write(appcast(now, dsa, length))
+		acf.close()
 	
-	print("Writing release notes stub...")
-	git_commit = exec_cmd_with_result("cd %s && git log -n1 | grep ^commit. | sed -e 's/^commit.//g'" % MPLAYER_EXEC_DIR)
-	rnf = open(path.join(SPARKLE_RNOTES_DIR, "%s.html" % time_to_strversion(now)), 'w')
-	rnf.write(rnotes_stub(now, SVN_REVISION, git_commit))
-	rnf.close()
+		print("Writing release notes stub...")
+		git_commit = exec_cmd_with_result("cd %s && git log -n1 | grep ^commit. | sed -e 's/^commit.//g'" % MPLAYER_EXEC_DIR)
+		rnf = open(path.join(SPARKLE_RNOTES_DIR, "%s.html" % time_to_strversion(now)), 'w')
+		rnf.write(rnotes_stub(now, SVN_REVISION, git_commit))
+		rnf.close()
 	
-	print("Packaging complete. To finalize appcast.xml and release notes do a mercurial push.")
+		print("Deployment complete. To finalize appcast.xml and release notes do a mercurial push.")
 
 if __name__ == '__main__':
 	main()
