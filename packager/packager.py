@@ -26,7 +26,7 @@ import subprocess
 from zipfile import ZipFile, ZIP_DEFLATED
 
 USERNAME = os.getlogin()
-SVN_REVISION = 29971
+SVN_REVISION = 30136
 MPLAYER_EXEC_DIR = "/Users/%s/dev/mplayer-build/mplayer" % USERNAME
 LIB_DIRS = ["/usr/local","/opt/local"]
 PKG_DIR = "/Users/%s/dev" % USERNAME
@@ -178,7 +178,7 @@ def rnotes_stub(time, svn, git):
 
 def main():
 	parser = optparse.OptionParser(usage='packager.py [options]')
-	parser.add_option('-d', '--deploy', dest='deploy',
+	parser.add_option('-d', '--deploy', action='store_true', dest='deploy'
                     help='Deploys package to Google Code')
 	options, args = parser.parse_args()
 	
