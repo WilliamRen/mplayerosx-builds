@@ -6,13 +6,13 @@
 	      <description>Most recent changes with links to updates.</description>
 	      <language>en</language>
 	         <item>
-	           <title>Version 2010-04-23</title>
+	           <title>Version 2010-06-20</title>
 							<sparkle:releaseNotesLink>
-								http://mplayerosx-builds.googlecode.com/hg/sparkle/rnotes/2010-04-23.html
+								http://mplayerosx-builds.googlecode.com/hg/sparkle/rnotes/2010-06-20.html
 							</sparkle:releaseNotesLink>
-	           <pubDate>Fri, 23 Apr 2010 14:34:55 +0000</pubDate>
-	           <enclosure url="http://mplayerosx-builds.googlecode.com/files/mplayer-2010-04-23.zip" sparkle:version="20100423" sparkle:shortVersionString="2010-04-23" 
-										sparkle:dsaSignature="MC0CFQCQHRjmg9AkjwGq3AyRwSyXLHXSxQIUea8PvwP9dWCMDI3MLrTUtxPwPVM=" length="6678083" type="application/octet-stream" />
+	           <pubDate>Sun, 20 Jun 2010 10:41:17 +0000</pubDate>
+	           <enclosure url="http://mplayerosx-builds.googlecode.com/files/mplayer-2010-06-20.zip" sparkle:version="20100620" sparkle:shortVersionString="2010-06-20" 
+										sparkle:dsaSignature="MC0CFQCPwaMVDxk3PRQ8wsGYQ9ggnEFlAgIUf7B41Rg5BMNr3rLi+nPVGelP/LM=" length="6722872" type="application/octet-stream" />
 	        </item>
 	   </channel>
 	</rss>
