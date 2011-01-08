@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-	<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
-	   <channel>
-	      <title>mplayer.git Binary Distribution Changelog</title>
-	      <link>http://mplayerosx-builds.googlecode.com/hg/sparkle/appcast.xml</link>
-	      <description>Most recent changes with links to updates.</description>
-	      <language>en</language>
-	         <item>
-	           <title>Version 2010-06-20</title>
-							<sparkle:releaseNotesLink>
-								http://mplayerosx-builds.googlecode.com/hg/sparkle/rnotes/2010-06-20.html
-							</sparkle:releaseNotesLink>
-	           <pubDate>Sun, 20 Jun 2010 10:41:17 +0000</pubDate>
-	           <enclosure url="http://mplayerosx-builds.googlecode.com/files/mplayer-2010-06-20.zip" sparkle:version="20100620" sparkle:shortVersionString="2010-06-20" 
-										sparkle:dsaSignature="MC0CFQCPwaMVDxk3PRQ8wsGYQ9ggnEFlAgIUf7B41Rg5BMNr3rLi+nPVGelP/LM=" length="6722872" type="application/octet-stream" />
-	        </item>
-	   </channel>
-	</rss>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<channel>
+		<title>mplayer.git Binary Distribution Changelog</title>
+		<link>http://pigoz.github.com/mplayerosx-builds/mplayer-git.mpBinaries.appcast.xml</link>
+		<description>Most recent changes with links to updates.</description>
+		<language>en</language>
+		<item>
+			<title>Version 2011-01-08</title>
+			<sparkle:releaseNotesLink>http://pigoz.github.com/mplayerosx-builds/mplayer-git.mpBinaries.rnotes/2011-01-08.html</sparkle:releaseNotesLink>
+			<pubDate>2011-01-08 15:09:28 +0100</pubDate>
+			<enclosure url="http://mplayerosx-builds.googlecode.com/files/mplayer-git-2011-01-08.zip" sparkle:version="20110108" sparkle:shortVersionString="2011-01-08"	
+			sparkle:dsaSignature="MCwCFG6LOQnUlZu/PvKo80L23lXGkwcDAhQBleewi5XbQSTW77vCWoEg2EXbUA==" length="8206189" type="application/octet-stream" />
+		</item>
+	</channel>
+</rss>
